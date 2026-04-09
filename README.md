@@ -2,20 +2,20 @@
 
 A real-time driver fatigue detection system built using computer vision and machine learning to monitor driver alertness and enhance road safety.
 
-## 🔍 Features
+## Features
 - Eye detection using computer vision
 - Detects eye closure
 - Triggers alert when driver is sleepy
 
-## 🛠️ Tech Used
+## Tech Used
 - Python
 - OpenCV
 - MediaPipe
 
-## 🚀 Future Improvements
+## Future Improvements
 - Add head pose detection
 - Improve accuracy
 - Integrate with mobile alert system
 
-## 📁 Project Status
+## Project Status
 🚧 Work in Progress
