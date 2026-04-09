@@ -12,6 +12,13 @@ EYE_AR_CONSEC_FRAMES = 20
 COUNTER = 0
 ALARM_ON = False
 
+# NEW (SMART FEATURES)
+EAR_HISTORY = []
+MAX_HISTORY = 5
+
+ALERT_COOLDOWN = 30
+cooldown_counter = 0
+
 # -----------------------------
 # INITIALIZE MEDIAPIPE
 # -----------------------------
@@ -87,28 +94,45 @@ while True:
             right_EAR = calculate_EAR(right_eye)
             EAR = (left_EAR + right_EAR) / 2.0
 
+            # -----------------------------
+            # EAR SMOOTHING
+            # -----------------------------
+            EAR_HISTORY.append(EAR)
+            if len(EAR_HISTORY) > MAX_HISTORY:
+                EAR_HISTORY.pop(0)
+
+            avg_EAR = sum(EAR_HISTORY) / len(EAR_HISTORY)
+
             # Display EAR
-            cv2.putText(frame, f"EAR: {EAR:.2f}", (30, 50),
+            cv2.putText(frame, f"EAR: {avg_EAR:.2f}", (30, 50),
                         cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
 
-            # DROWSINESS DETECTION
-            if EAR < EYE_AR_THRESH:
+            # -----------------------------
+            # DROWSINESS DETECTION (SMART)
+            # -----------------------------
+            if cooldown_counter > 0:
+                cooldown_counter -= 1
+
+            if avg_EAR < EYE_AR_THRESH:
                 COUNTER += 1
 
-                if COUNTER >= EYE_AR_CONSEC_FRAMES:
+                if COUNTER >= EYE_AR_CONSEC_FRAMES and cooldown_counter == 0:
                     cv2.putText(frame, "DROWSINESS ALERT!", (50, 100),
                                 cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 3)
 
                     ALARM_ON = True
+                    cooldown_counter = ALERT_COOLDOWN
             else:
                 COUNTER = 0
                 ALARM_ON = False
 
-    # CONTINUOUS ALARM (NON-BLOCKING STYLE)
+    # -----------------------------
+    # CONTINUOUS ALARM
+    # -----------------------------
     if ALARM_ON:
         winsound.Beep(1000, 200)
 
-    cv2.imshow("Driver Drowsiness Detection", frame)
+    cv2.imshow("Driver Drowsiness Detection (Smart)", frame)
 
     if cv2.waitKey(1) & 0xFF == 27:
         break
