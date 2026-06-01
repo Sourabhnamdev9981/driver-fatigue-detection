@@ -6,6 +6,7 @@ A real-time driver fatigue detection system built using computer vision and mach
 - Eye detection using computer vision
 - Detects eye closure
 - Triggers alert when driver is sleepy
+- 
 
 ## Tech Used
 - Python
